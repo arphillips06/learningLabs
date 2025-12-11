@@ -1,0 +1,114 @@
+root@P1> show configuration
+system {
+    root-authentication {
+        encrypted-password "$6$ZN8xzuP9$ZFObuMOhcxJWBvhmCjnUy6FGX55cAVbc2S9DsnkRn7M5qh5Z9LdaYrrCTiwbV261JKy33jM6YaKZ/JvAswT/W/"; ## SECRET-DATA
+    }
+    host-name P1;
+}
+chassis {
+    network-services enhanced-ip;
+}
+interfaces {
+    ge-0/0/0 {
+        description P1-PE3;
+        unit 0 {
+            family inet {
+                address 172.20.0.5/31;
+            }
+            family iso;
+            family inet6;
+            family mpls;
+        }
+    }
+    ge-0/0/1 {
+        description P1-PE2;
+        unit 0 {
+            family inet {
+                address 172.20.0.3/31;
+            }
+            family iso;
+            family inet6;
+            family mpls;
+        }
+    }
+    ge-0/0/2 {
+        description P1-PE1;
+        unit 0 {
+            family inet {
+                address 172.20.0.1/31;
+            }
+            family iso;
+            family inet6;
+            family mpls;
+        }
+    }
+    lo0 {
+        unit 0 {
+            family inet {
+                address 10.1.1.1/32;
+            }
+            family iso {
+                address 49.0001.0100.0011.0001.00;
+            }
+            family inet6 {
+                address 10:1:1::1/128;
+            }
+        }
+    }
+}
+protocols {
+    ldp {
+        interface ge-0/0/0.0;
+        interface ge-0/0/1.0;
+        interface ge-0/0/2.0;
+        p2mp;
+    }
+    isis {
+        backup-spf-options {
+            use-post-convergence-lfa;
+        }
+        source-packet-routing {
+            node-segment {
+                ipv4-index 411;
+                ipv6-index 611;
+            }
+        }
+        level 2 wide-metrics-only;
+        level 1 disable;
+        interface ge-0/0/0.0 {
+            point-to-point;
+            level 2 {
+                metric 10;
+                post-convergence-lfa {
+                    node-protection;
+                }
+            }
+        }
+        interface ge-0/0/1.0 {
+            point-to-point;
+            level 2 {
+                metric 10;
+                post-convergence-lfa {
+                    node-protection;
+                }
+            }
+        }
+        interface ge-0/0/2.0 {
+            point-to-point;
+            level 2 {
+                metric 10;
+                post-convergence-lfa {
+                    node-protection;
+                }
+            }
+        }
+        interface lo0.0 {
+            passive;
+        }
+    }
+    mpls {
+        interface ge-0/0/0.0;
+        interface ge-0/0/1.0;
+        interface ge-0/0/2.0;
+    }
+}

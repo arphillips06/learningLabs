@@ -1,0 +1,75 @@
+CE3#show run
+Current configuration : 1148 bytes
+!
+version 12.4
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+!
+hostname CE3
+!
+boot-start-marker
+boot-end-marker
+!
+!
+no aaa new-model
+memory-size iomem 5
+ip cef
+!
+!
+no ip dhcp use vrf connected
+!
+ip dhcp pool LAN
+   network 10.0.3.0 255.255.255.0
+   default-router 10.0.3.1
+!
+!
+ip multicast-routing
+!
+multilink bundle-name authenticated
+!
+archive
+ log config
+  hidekeys
+!
+interface FastEthernet0/0
+ no ip address
+ duplex auto
+ speed auto
+!
+interface FastEthernet0/0.10
+ encapsulation dot1Q 10
+ ip address 192.168.10.4 255.255.255.254
+ ip pim sparse-mode
+ ip igmp version 3
+ ip ospf 1 area 0
+!
+interface FastEthernet0/1
+ ip address 10.0.3.1 255.255.255.0
+ ip pim sparse-mode
+ ip igmp version 3
+ ip ospf 1 area 0
+ duplex auto
+ speed auto
+!
+router ospf 1
+ log-adjacency-changes
+ passive-interface FastEthernet0/1
+!
+ip forward-protocol nd
+!
+!
+ip http server
+no ip http secure-server
+ip pim ssm default
+!
+control-plane
+!
+line con 0
+ privilege level 15
+ logging synchronous
+line aux 0
+line vty 0 4
+!
+!
+end

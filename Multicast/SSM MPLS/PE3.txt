@@ -1,0 +1,150 @@
+root@PE3> show configuration
+system {
+    root-authentication {
+        encrypted-password "$6$/Ps4FeK7$L5gq1e8it/m16IpJqYuhTkEph5BtJRRzLPFclv47XoiyiI6edEU5AbDSMO08fJ7Jt1MyCawyWbjcv6PmrdTxU1"; ## SECRET-DATA
+    }
+    host-name PE3;
+}
+chassis {
+    network-services enhanced-ip;
+}
+interfaces {
+    ge-0/0/0 {
+        description PE3-P1;
+        unit 0 {
+            family inet {
+                address 172.20.0.4/31;
+            }
+            family iso;
+            family inet6;
+            family mpls;
+        }
+    }
+    ge-0/0/1 {
+        description CE3;
+        flexible-vlan-tagging;
+        encapsulation flexible-ethernet-services;
+        unit 10 {
+            vlan-id 10;
+            family inet {
+                address 192.168.10.5/31;
+            }
+        }
+    }
+    lo0 {
+        unit 0 {
+            family inet {
+                address 10.0.0.3/32;
+            }
+            family iso {
+                address 49.0001.0100.0000.0003.00;
+            }
+            family inet6 {
+                address 10::3/128;
+            }
+        }
+    }
+}
+policy-options {
+    policy-statement bgp-to-ospf {
+        from protocol bgp;
+        then accept;
+    }
+}
+routing-instances {
+    VPN-A {
+        instance-type vrf;
+        interface ge-0/0/1.10;
+        route-distinguisher 65001:30;
+        provider-tunnel {
+            ldp-p2mp;
+            selective {
+                group 232.0.0.0/8 {
+                    source 0.0.0.0/0 {
+                        ldp-p2mp;
+                    }
+                }
+            }
+        }
+        vrf-target target:65001:10;
+        vrf-table-label;
+        protocols {
+            ospf {
+                area 0.0.0.0 {
+                    interface ge-0/0/1.10;
+                }
+                export bgp-to-ospf;
+            }
+            pim {
+                interface ge-0/0/1.10;
+            }
+            mvpn;
+        }
+    }
+}
+routing-options {
+    route-distinguisher-id 10.0.0.3;
+    router-id 10.0.0.3;
+    autonomous-system 65001;
+}
+protocols {
+    ldp {
+        interface ge-0/0/0.0;
+        p2mp;
+    }
+    bgp {
+        group iBGP {
+            type internal;
+            description iBGP;
+            local-address 10.0.0.3;
+            family inet {
+                unicast;
+            }
+            family inet-vpn {
+                unicast;
+            }
+            family inet-mvpn {
+                signaling;
+            }
+            neighbor 10.0.0.2 {
+                description PE2;
+            }
+            neighbor 10.0.0.1 {
+                description PE1;
+            }
+        }
+    }
+    isis {
+        backup-spf-options {
+            use-post-convergence-lfa;
+        }
+        source-packet-routing {
+            node-segment {
+                ipv4-index 403;
+                ipv6-index 603;
+            }
+        }
+        level 2 wide-metrics-only;
+        level 1 disable;
+        interface ge-0/0/0.0 {
+            point-to-point;
+            level 2 {
+                metric 10;
+                post-convergence-lfa {
+                    node-protection;
+                }
+            }
+        }
+        interface lo0.0 {
+            passive;
+        }
+    }
+    igmp {
+        interface ge-0/0/1.10 {
+            version 3;
+        }
+    }
+    mpls {
+        interface ge-0/0/0.0;
+    }
+}
