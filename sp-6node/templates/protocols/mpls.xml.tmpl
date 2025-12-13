@@ -1,0 +1,9 @@
+{{ define "mpls" }}
+<mpls>
+  {{ range .Protocols.MPLS.Interfaces }}
+  <interface>
+    <name>{{ . }}</name>
+  </interface>
+  {{ end }}
+</mpls>
+{{ end }}

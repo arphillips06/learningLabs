@@ -1,0 +1,10 @@
+{{ define "protocols" }}
+<protocols>
+  {{ template "ldp" . }}
+  {{ template "mpls" . }}
+  {{ if .Protocols.BGP }}
+  {{ template "bgp" . }}
+  {{ end }}
+  {{ template "isis" . }}
+</protocols>
+{{ end }}

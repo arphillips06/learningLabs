@@ -1,0 +1,41 @@
+{{ define "isis" }}
+<isis>
+
+  <backup-spf-options>
+    <use-post-convergence-lfa/>
+  </backup-spf-options>
+
+  <source-packet-routing>
+    <srgb>
+      <start-label>100000</start-label>
+      <index-range>4000</index-range>
+    </srgb>
+    <node-segment>
+      <ipv4-index>{{ .Protocols.ISIS.NodeSIDIPv4 }}</ipv4-index>
+      <ipv6-index>{{ .Protocols.ISIS.NodeSIDIPv6 }}</ipv6-index>
+    </node-segment>
+  </source-packet-routing>
+
+  {{ range .Protocols.ISIS.P2PInterfaces }}
+  <interface>
+    <name>{{ . }}</name>
+    <point-to-point/>
+    <level>
+      <name>2</name>
+      <metric>{{ $.Protocols.ISIS.Metric }}</metric>
+      <post-convergence-lfa>
+        <node-protection/>
+      </post-convergence-lfa>
+    </level>
+  </interface>
+  {{ end }}
+
+  {{ if .Protocols.ISIS.PassiveLoopback }}
+  <interface>
+    <name>lo0.0</name>
+    <passive/>
+  </interface>
+  {{ end }}
+
+</isis>
+{{ end }}

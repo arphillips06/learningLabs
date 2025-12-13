@@ -1,0 +1,9 @@
+{{ define "configuration" }}
+<configuration>
+  {{ template "system" . }}
+  {{ template "chassis" . }}
+  {{ template "interfaces" . }}
+  {{ template "routing-options" . }}
+  {{ template "protocols" . }}
+</configuration>
+{{ end }}

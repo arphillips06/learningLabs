@@ -1,0 +1,59 @@
+system:
+  hostname: PE4
+  root_password: $6$ycE8MZQb$Z95jLGU6bWkBwXLyA1IpAp.eO486aDwuBnrrwyhaRrt47k4fXSgR1B678FWPUofkHwoJrZlUPkhNA1XHWDdR5/
+
+loopback:
+  lo0:
+  - unit: 0
+    ipv4: 10.255.1.4
+    ipv6: 2a01:4b00:bf28:bb00::1:4
+    iso: 49.0001.0102.5500.1004.00
+
+core_interfaces:
+  - name: ge-0/0/1
+    description: "PE4 to P1"
+    unit: 0
+    ipv4: 172.16.0.9/31
+  - name: ge-0/0/2
+    description: "PE4 to P2"
+    unit: 0
+    ipv4: 172.16.0.17/31
+
+protocols:
+  bgp:
+    group: iBGP
+    type: internal
+    local-address: 10.255.1.4
+    families:
+      - name: inet
+        NLRI: unicast
+      - name: inet-vpn
+        NLRI: unicast
+      - name: inet-mvpn
+        NLRI: signaling
+    neighbors:
+      - address: 10.255.1.1
+        description: PE1
+      - address: 10.255.1.2
+        description: PE2
+      - address: 10.255.1.3
+        description: PE3
+  isis:
+    metric: 10
+    node_sid_ipv4: 414
+    node_sid_ipv6: 614
+    p2p_interfaces:
+      - ge-0/0/1.0
+      - ge-0/0/2.0
+    passive_loopback: true
+  mpls:
+    interfaces:
+      - ge-0/0/1.0
+      - ge-0/0/2.0
+  ldp:
+    interfaces:
+      - ge-0/0/1.0
+      - ge-0/0/2.0
+    p2mp: true
+routing-options:
+  router-id: 10.255.1.4

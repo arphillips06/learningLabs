@@ -1,0 +1,65 @@
+{{ define "interfaces" }}
+<interfaces>
+
+  {{ range .CoreInterfaces }}
+  <interface>
+    <name>{{ .Name }}</name>
+
+    {{- if .Description }}
+    <description>{{ .Description }}</description>
+    {{- end }}
+
+    {{- if .AeBundle }}
+    <gigether-options>
+      <ieee-802.3ad>
+        <bundle>{{ .AeBundle }}</bundle>
+      </ieee-802.3ad>
+    </gigether-options>
+    {{- end }}
+
+    {{- if .Unit }}
+    <unit>
+      <name>{{ .Unit }}</name>
+      <family>
+        <inet>
+          <address>
+            <name>{{ .IPv4 }}</name>
+          </address>
+        </inet>
+        <iso/>
+        <inet6/>
+        <mpls/>
+      </family>
+    </unit>
+    {{- end }}
+
+  </interface>
+  {{ end }}
+
+  <!-- Loopback -->
+  <interface>
+    <name>lo0</name>
+    <unit>
+      <name>{{ (index .Loopback.Lo0 0).Unit }}</name>
+      <family>
+        <inet>
+          <address>
+            <name>{{ (index .Loopback.Lo0 0).IPv4 }}/32</name>
+          </address>
+        </inet>
+        <inet6>
+          <address>
+            <name>{{ (index .Loopback.Lo0 0).IPv6 }}/128</name>
+          </address>
+        </inet6>
+        <iso>
+          <address>
+            <name>{{ (index .Loopback.Lo0 0).ISO }}</name>
+          </address>
+        </iso>
+      </family>
+    </unit>
+  </interface>
+
+</interfaces>
+{{ end }}

@@ -1,0 +1,10 @@
+{{ define "system" }}
+<system>
+  <host-name>{{ .System.Hostname }}</host-name>
+
+  <root-authentication>
+    <encrypted-password>{{ .System.RootPassword }}</encrypted-password>
+  </root-authentication>
+
+</system>
+{{ end }}

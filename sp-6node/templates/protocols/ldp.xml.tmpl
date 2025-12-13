@@ -1,0 +1,10 @@
+{{ define "ldp" }}
+<ldp>
+  {{ range .Protocols.LDP.Interfaces }}
+  <interface>
+    <name>{{ . }}</name>
+  </interface>
+  {{ end }}
+  <p2mp/>
+</ldp>
+{{ end }}

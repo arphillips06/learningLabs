@@ -1,0 +1,68 @@
+system:
+  hostname: P2
+  root_password: $6$ycE8MZQb$Z95jLGU6bWkBwXLyA1IpAp.eO486aDwuBnrrwyhaRrt47k4fXSgR1B678FWPUofkHwoJrZlUPkhNA1XHWDdR5/
+
+loopback:
+  lo0:
+  - unit: 0
+    ipv4: 10.255.0.2
+    ipv6: 2a01:4b00:bf28:bb00::2
+    iso: 49.0001.0102.5500.0002.00
+
+core_interfaces:
+  - name: ge-0/0/0
+    description: "P2 to P1"
+    ae_bundle: ae0
+  - name: ge-0/0/1
+    description: "P2 to P1"
+    ae_bundle: ae0
+  - name: ae0
+    description: "ae0 P1"
+    unit: 0
+    ipv4: 172.16.0.1/31
+  - name: ge-0/0/2
+    description: "P2 to PE1"
+    unit: 0
+    ipv4: 172.16.0.10/31
+  - name: ge-0/0/3
+    description: "P2 to PE2"
+    unit: 0
+    ipv4: 172.16.0.12/31
+  - name: ge-0/0/4
+    description: "P2 to PE3"
+    unit: 0
+    ipv4: 172.16.0.14/31
+  - name: ge-0/0/5
+    description: "P2 to PE4"
+    unit: 0
+    ipv4: 172.16.0.16/31
+
+protocols:
+  isis:
+    metric: 10
+    node_sid_ipv4: 402
+    node_sid_ipv6: 602
+    p2p_interfaces:
+      - ae0.0
+      - ge-0/0/2.0
+      - ge-0/0/3.0
+      - ge-0/0/4.0
+      - ge-0/0/5.0
+    passive_loopback: true
+  mpls:
+    interfaces:
+      - ae0.0
+      - ge-0/0/2.0
+      - ge-0/0/3.0
+      - ge-0/0/4.0
+      - ge-0/0/5.0
+  ldp:
+    interfaces:
+      - ae0.0
+      - ge-0/0/2.0
+      - ge-0/0/3.0
+      - ge-0/0/4.0
+      - ge-0/0/5.0
+    p2mp: true
+routing-options:
+  router-id: 10.255.0.2

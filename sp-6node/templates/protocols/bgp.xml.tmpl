@@ -1,0 +1,30 @@
+{{ define "bgp" }}
+<bgp>
+  <group>
+    <name>{{ .Protocols.BGP.Group }}</name>
+    <type>{{ .Protocols.BGP.Type }}</type>
+
+    {{- if .Protocols.BGP.LocalAddress }}
+    <local-address>{{ .Protocols.BGP.LocalAddress }}</local-address>
+    {{- end }}
+
+    <family>
+      {{- range .Protocols.BGP.Families }}
+      <{{ .Name }}>
+        <{{ .NLRI }}/>
+      </{{ .Name }}>
+      {{- end }}
+    </family>
+
+    {{- range .Protocols.BGP.Neighbors }}
+    <neighbor>
+      <name>{{ .Address }}</name>
+      {{- if .Description }}
+      <description>{{ .Description }}</description>
+      {{- end }}
+    </neighbor>
+    {{- end }}
+
+  </group>
+</bgp>
+{{ end }}

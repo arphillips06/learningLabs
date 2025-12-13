@@ -1,0 +1,12 @@
+{{ define "routing-options" }}
+<routing-options>
+
+  <route-distinguisher-id>{{ .RoutingOptions.RouterID }}</route-distinguisher-id>
+  <router-id>{{ .RoutingOptions.RouterID }}</router-id>
+
+  <autonomous-system>
+    <as-number>{{ .RoutingOptions.ASN }}</as-number>
+  </autonomous-system>
+
+</routing-options>
+{{ end }}

@@ -1,0 +1,9 @@
+# Junos temporary license
+# Obtain from:
+# https://www.juniper.net/us/en/dm/vmx-trial-download.html
+#
+# Paste full license text into:
+#   licenses/junos_eval.lic
+#
+# Example format:
+# E435890758 xxxxxx xxxxxx ...
