@@ -1,0 +1,120 @@
+#
+# Module devmgr configuration.
+#
+configure snmp sysName "CS2"
+configure sys-recovery-level switch reset
+
+#
+# Module vlan configuration.
+#
+configure vlan default delete ports all
+configure vr VR-Default delete ports 1-5
+configure vr VR-Default add ports 1-5
+create qosprofile "QP2"
+create qosprofile "QP3"
+create qosprofile "QP4"
+create qosprofile "QP5"
+create qosprofile "QP6"
+create qosprofile "QP7"
+create vlan "LOOPBACK"
+enable loopback-mode vlan LOOPBACK
+create vlan "P2P-CS2-CS1"
+create vlan "P2P-CS2-TOR1"
+create vlan "P2P-CS2-TOR2"
+create vlan "P2P-CS2-TOR3"
+create vlan "RP-LOOPBACK"
+enable ipforwarding ipv6 vlan RP-LOOPBACK
+enable loopback-mode vlan RP-LOOPBACK
+configure vlan Default add ports 4 untagged
+configure vlan P2P-CS2-CS1 add ports 1 untagged
+configure vlan P2P-CS2-TOR1 add ports 3 untagged
+configure vlan P2P-CS2-TOR2 add ports 2 untagged
+configure vlan P2P-CS2-TOR3 add ports 5 untagged
+configure vlan LOOPBACK ipaddress 10.255.0.2 255.255.255.255
+enable ipforwarding vlan LOOPBACK
+configure vlan P2P-CS2-CS1 ipaddress 172.16.0.1 255.255.255.254
+enable ipforwarding vlan P2P-CS2-CS1
+configure vlan P2P-CS2-TOR1 ipaddress 172.16.2.0 255.255.255.254
+enable ipforwarding vlan P2P-CS2-TOR1
+configure vlan P2P-CS2-TOR2 ipaddress 172.16.2.2 255.255.255.254
+enable ipforwarding vlan P2P-CS2-TOR2
+configure vlan P2P-CS2-TOR3 ipaddress 172.16.2.4 255.255.255.254
+enable ipforwarding vlan P2P-CS2-TOR3
+configure vlan RP-LOOPBACK ipaddress 192.168.10.1 255.255.255.255
+enable ipforwarding vlan RP-LOOPBACK
+configure vlan LOOPBACK ipaddress eui64 fe80::/64
+configure vlan LOOPBACK ipaddress 2001:db8:10::2/128
+configure vlan RP-LOOPBACK ipaddress eui64 fe80::/64
+configure vlan RP-LOOPBACK ipaddress 2001:db8:255::1/128
+configure qosscheduler strict-priority ports 1
+configure qosscheduler strict-priority ports 2
+configure qosscheduler strict-priority ports 3
+configure qosscheduler strict-priority ports 4
+configure qosscheduler strict-priority ports 5
+
+#
+# Module mcmgr configuration.
+#
+enable ipmcforwarding vlan "LOOPBACK"
+enable ipmcforwarding vlan "P2P-CS2-CS1"
+enable ipmcforwarding vlan "P2P-CS2-TOR1"
+enable ipmcforwarding vlan "P2P-CS2-TOR2"
+enable ipmcforwarding vlan "P2P-CS2-TOR3"
+enable ipmcforwarding vlan "RP-LOOPBACK"
+enable ipmcforwarding ipv6 vlan "RP-LOOPBACK"
+
+#
+# Module fdb configuration.
+#
+disable iparp vr VR-Mgmt refresh
+disable neighbor-discovery vr VR-Mgmt refresh
+
+#
+# Module policy configuration.
+#
+configure policy slices tci-overwrite 0
+enable policy
+
+#
+# Module msdp configuration.
+#
+create msdp mesh-group CORE
+create msdp peer 10.255.0.1
+configure msdp peer 10.255.0.1 source-interface 10.255.0.2
+configure msdp peer 10.255.0.1 mesh-group CORE
+enable msdp peer 10.255.0.1
+configure msdp originator-id 10.255.0.2
+enable msdp
+
+#
+# Module netTools configuration.
+#
+enable dhcp vlan Default
+enable dhcp vlan Mgmt
+
+#
+# Module ospf configuration.
+#
+configure ospf routerid 10.255.0.2
+configure ospf metric-table 10M 10 100M 5 1G 4 2.5G 3 5G 3 10G 3 25G 2 40G 2 50G 2 100G 1
+enable ospf
+configure ospf add vlan LOOPBACK area 0.0.0.0 passive
+configure ospf add vlan P2P-CS2-CS1 area 0.0.0.0 link-type point-to-point
+configure ospf add vlan P2P-CS2-TOR1 area 0.0.0.0 link-type point-to-point
+configure ospf add vlan P2P-CS2-TOR2 area 0.0.0.0 link-type point-to-point
+configure ospf add vlan RP-LOOPBACK area 0.0.0.0 passive
+
+#
+# Module ospfv3 configuration.
+#
+
+#
+# Module pim configuration.
+#
+configure pim add vlan "P2P-CS2-CS1" sparse
+configure pim add vlan "P2P-CS2-TOR1" sparse
+configure pim add vlan "P2P-CS2-TOR2" sparse
+configure pim add vlan "RP-LOOPBACK" sparse
+enable pim
+configure pim crp static 192.168.10.1 "v4-groups" 192
+

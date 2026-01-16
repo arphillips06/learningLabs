@@ -1,0 +1,62 @@
+#
+# Module devmgr configuration.
+#
+configure snmp sysName "AS8"
+configure sys-recovery-level switch reset
+
+#
+# Module vlan configuration.
+#
+configure vlan default delete ports all
+configure vr VR-Default delete ports 1-4
+configure vr VR-Default add ports 1-4
+create qosprofile "QP2"
+create qosprofile "QP3"
+create qosprofile "QP4"
+create qosprofile "QP5"
+create qosprofile "QP6"
+create qosprofile "QP7"
+create vlan "LOOPBACK"
+enable loopback-mode vlan LOOPBACK
+create vlan "P2P-AS8-PIM-TEST"
+create vlan "P2P-AS8-TOR2"
+configure vlan Default add ports 3-4 untagged
+configure vlan P2P-AS8-PIM-TEST add ports 2 untagged
+configure vlan P2P-AS8-TOR2 add ports 1 untagged
+configure vlan LOOPBACK ipaddress 10.255.0.108 255.255.255.255
+enable ipforwarding vlan LOOPBACK
+configure vlan P2P-AS8-PIM-TEST ipaddress 172.17.0.6 255.255.255.252
+enable ipforwarding vlan P2P-AS8-PIM-TEST
+configure vlan P2P-AS8-TOR2 ipaddress 172.16.3.1 255.255.255.254
+enable ipforwarding vlan P2P-AS8-TOR2
+configure vlan LOOPBACK ipaddress eui64 fe80::/64
+configure vlan LOOPBACK ipaddress 2a0b::108/128
+configure qosscheduler strict-priority ports 1
+configure qosscheduler strict-priority ports 2
+configure qosscheduler strict-priority ports 3
+configure qosscheduler strict-priority ports 4
+
+#
+# Module mcmgr configuration.
+#
+enable ipmcforwarding vlan "LOOPBACK"
+enable ipmcforwarding vlan "P2P-AS8-PIM-TEST"
+enable ipmcforwarding vlan "P2P-AS8-TOR2"
+
+#
+# Module ospf configuration.
+#
+configure ospf routerid 10.255.0.108
+configure ospf metric-table 10M 10 100M 5 1G 4 2.5G 3 5G 3 10G 3 25G 2 40G 2 50G 2 100G 1
+enable ospf
+configure ospf add vlan LOOPBACK area 0.0.0.0 passive
+configure ospf add vlan P2P-AS8-PIM-TEST area 0.0.0.0 passive
+configure ospf add vlan P2P-AS8-TOR2 area 0.0.0.0 link-type point-to-point
+
+#
+# Module pim configuration.
+#
+configure pim add vlan "P2P-AS8-TOR2" sparse
+configure pim add vlan "P2P-AS8-PIM-TEST" sparse
+enable pim
+configure pim crp static 192.168.10.1 "vr-groups" 192

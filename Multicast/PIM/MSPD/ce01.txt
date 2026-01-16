@@ -1,0 +1,107 @@
+hostname CE1
+!
+boot-start-marker
+boot-end-marker
+!
+!
+no aaa new-model
+memory-size iomem 5
+ip cef
+!
+!
+no ip dhcp use vrf connected
+!
+ip dhcp pool LAN
+   network 10.0.1.0 255.255.255.0
+   default-router 10.0.1.1
+!
+!
+no ip domain lookup
+ip multicast-routing
+!
+multilink bundle-name authenticated
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+archive
+ log config
+  hidekeys
+!
+!
+!
+!
+!
+!
+!
+!
+interface FastEthernet0/0
+ ip address 172.17.0.0 255.255.255.254
+ ip pim sparse-mode
+ ip igmp version 3
+ ip ospf network point-to-point
+ ip ospf 1 area 0
+ duplex auto
+ speed auto
+!
+interface FastEthernet0/1
+ ip address 10.0.1.1 255.255.255.0
+ ip pim sparse-mode
+ ip igmp version 3
+ ip ospf 1 area 0
+ duplex auto
+ speed auto
+!
+router ospf 1
+ log-adjacency-changes
+ passive-interface FastEthernet0/1
+!
+ip forward-protocol nd
+!
+!
+no ip http server
+no ip http secure-server
+ip pim rp-address 192.168.10.1
+!
+!
+!
+!
+!
+!
+!
+control-plane
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+line con 0
+ privilege level 15
+ logging synchronous
+line aux 0
+line vty 0 4
+!
+!
+end

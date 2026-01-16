@@ -1,0 +1,79 @@
+#
+# Module devmgr configuration.
+#
+configure snmp sysName "TOR1"
+configure sys-recovery-level switch reset
+
+#
+# Module vlan configuration.
+#
+configure vlan default delete ports all
+configure vr VR-Default delete ports 1-5
+configure vr VR-Default add ports 1-5
+create qosprofile "QP2"
+create qosprofile "QP3"
+create qosprofile "QP4"
+create qosprofile "QP5"
+create qosprofile "QP6"
+create qosprofile "QP7"
+create vlan "LOOPBACK"
+enable loopback-mode vlan LOOPBACK
+create vlan "P2P-TOR1-CISCO_SENDER"
+create vlan "P2P-TOR1-CS1"
+create vlan "P2P-TOR1-CS2"
+configure vlan Default add ports 1,4 untagged
+configure vlan P2P-TOR1-CISCO_SENDER add ports 5 untagged
+configure vlan P2P-TOR1-CS1 add ports 2 untagged
+configure vlan P2P-TOR1-CS2 add ports 3 untagged
+configure vlan LOOPBACK ipaddress 10.255.0.11 255.255.255.255
+enable ipforwarding vlan LOOPBACK
+configure vlan P2P-TOR1-CISCO_SENDER ipaddress 172.17.0.1 255.255.255.254
+enable ipforwarding vlan P2P-TOR1-CISCO_SENDER
+configure vlan P2P-TOR1-CS1 ipaddress 172.16.1.1 255.255.255.254
+enable ipforwarding vlan P2P-TOR1-CS1
+configure vlan P2P-TOR1-CS2 ipaddress 172.16.2.1 255.255.255.254
+enable ipforwarding vlan P2P-TOR1-CS2
+configure qosscheduler strict-priority ports 1
+configure qosscheduler strict-priority ports 2
+configure qosscheduler strict-priority ports 3
+configure qosscheduler strict-priority ports 4
+configure qosscheduler strict-priority ports 5
+
+#
+# Module mcmgr configuration.
+#
+enable ipmcforwarding vlan "LOOPBACK"
+enable ipmcforwarding vlan "P2P-TOR1-CISCO_SENDER"
+enable ipmcforwarding vlan "P2P-TOR1-CS1"
+enable ipmcforwarding vlan "P2P-TOR1-CS2"
+
+#
+# Module fdb configuration.
+#
+disable iparp vr VR-Mgmt refresh
+disable neighbor-discovery vr VR-Mgmt refresh
+
+#
+# Module policy configuration.
+#
+configure policy slices tci-overwrite 0
+
+#
+# Module ospf configuration.
+#
+configure ospf routerid 10.255.0.11
+configure ospf metric-table 10M 10 100M 5 1G 4 2.5G 3 5G 3 10G 3 25G 2 40G 2 50G 2 100G 1
+enable ospf
+configure ospf add vlan LOOPBACK area 0.0.0.0 passive
+configure ospf add vlan P2P-TOR1-CISCO_SENDER area 0.0.0.0 link-type point-to-point
+configure ospf add vlan P2P-TOR1-CS1 area 0.0.0.0 link-type point-to-point
+configure ospf add vlan P2P-TOR1-CS2 area 0.0.0.0 link-type point-to-point
+
+#
+# Module pim configuration.
+#
+configure pim add vlan "P2P-TOR1-CISCO_SENDER" sparse
+configure pim add vlan "P2P-TOR1-CS1" sparse
+configure pim add vlan "P2P-TOR1-CS2" sparse
+enable pim
+configure pim crp static 192.168.10.1 "v4-groups" 192
