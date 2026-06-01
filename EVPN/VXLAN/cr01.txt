@@ -1,0 +1,189 @@
+root@cr01.eve> show configuration
+## Last commit: 2025-04-13 18:49:40 UTC by root
+version 20210930.105123_builder.r1214909;
+system {
+    root-authentication {
+        encrypted-password "$6$Fup.V5jX$d3b0s95Eedv4Vjpv3FwHFqc1GKQlBKjir0GhoZydrg4kE9A9EtZIKCmOfbFZ6aIOcgpKshyOJvmRjwndxvWvH1"; ## SECRET-DATA
+    }
+    host-name cr01.eve;
+    domain-name ross-lab.org;
+    syslog {
+        user * {
+            any emergency;
+        }
+        file messages {
+            any notice;
+            authorization info;
+        }
+        file interactive-commands {
+            interactive-commands any;
+        }
+    }
+}
+chassis {
+    network-services enhanced-ip;
+}
+interfaces {
+    ge-0/0/2 {
+        description cr01->cr02;
+        unit 0 {
+            family inet {
+                address 10.0.0.0/31;
+            }
+            family iso;
+            family inet6;
+            family mpls;
+        }
+    }
+    ge-0/0/3 {
+        description cr01->spine01;
+        unit 0 {
+            family inet {
+                address 10.0.0.4/31;
+            }
+            family iso;
+            family inet6;
+            family mpls;
+        }
+    }
+    ge-0/0/4 {
+        description cr01->spine02;
+        unit 0 {
+            family inet {
+                address 10.0.0.2/31;
+            }
+            family iso;
+            family inet6;
+            family mpls;
+        }
+    }
+    irb {
+        unit 910 {
+            virtual-gateway-accept-data;
+            family inet {
+                address 192.168.0.199/24 {
+                    virtual-gateway-address 192.168.0.200;
+                }
+            }
+        }
+    }
+    lo0 {
+        unit 0 {
+            family inet {
+                address 1.1.1.1/32;
+            }
+            family iso {
+                address 49.0002.0001.0101.0001.00;
+            }
+            family inet6 {
+                address 2001::1:1:1:1/128;
+            }
+        }
+    }
+}
+routing-instances {
+    vrf-910 {
+        instance-type vrf;
+        interface irb.910;
+        route-distinguisher 1.1.1.1:1910;
+        vrf-target target:65001:910;
+    }
+    vxlan-910-vs {
+        vtep-source-interface lo0.0;
+        instance-type virtual-switch;
+        route-distinguisher 1.1.1.1:910;
+        vrf-target {
+            target:65001:910;
+            auto;
+        }
+        protocols {
+            evpn {
+                encapsulation vxlan;
+                extended-vni-list 910;
+                vni-options {
+                    vni 910;
+                }
+            }
+        }
+        bridge-domains {
+            bd910 {
+                vlan-id 910;
+                routing-interface irb.910;
+                vxlan {
+                    vni 910;
+                }
+            }
+        }
+    }
+}
+routing-options {
+    router-id 1.1.1.1;
+    autonomous-system 65001;
+}
+protocols {
+    bgp {
+        group iBGP {
+            type internal;
+            local-address 1.1.1.1;
+            family evpn {
+                signaling;
+            }
+            peer-as 65001;
+            neighbor 1.2.1.1 {
+                description leaf01;
+            }
+            neighbor 1.2.1.2 {
+                description leaf02;
+            }
+            neighbor 1.2.1.3 {
+                description leaf03;
+            }
+        }
+    }
+    isis {
+        backup-spf-options {
+            use-post-convergence-lfa;
+        }
+        source-packet-routing {
+            node-segment {
+                ipv4-index 4001;
+                ipv6-index 1;
+            }
+        }
+        level 1 disable;
+        level 2 wide-metrics-only;
+        interface ge-0/0/2.0 {
+            point-to-point;
+            level 2 {
+                metric 10;
+                post-convergence-lfa {
+                    node-protection;
+                }
+            }
+        }
+        interface ge-0/0/3.0 {
+            point-to-point;
+            level 2 {
+                metric 10;
+                post-convergence-lfa {
+                    node-protection;
+                }
+            }
+        }
+        interface ge-0/0/4.0 {
+            point-to-point;
+            level 2 {
+                metric 10;
+                post-convergence-lfa {
+                    node-protection;
+                }
+            }
+        }
+        interface lo0.0 {
+            passive;
+        }
+    }
+    mpls {
+        interface all;
+    }
+}

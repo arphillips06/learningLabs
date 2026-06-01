@@ -1,0 +1,126 @@
+root@leaf03.eve> show configuration | no-more
+## Last commit: 2025-04-13 18:59:45 UTC by root
+version 20210930.105123_builder.r1214909;
+system {
+    root-authentication {
+        encrypted-password "$6$.XeEKLOZ$j5td/HrBjBhXWgGsQXffGAdRzQxfRbnNG4ppDXIA5fXvN4w544b7FUWCMuLdOwKQ/ayepm.z04GsWWuw/vkEp/"; ## SECRET-DATA
+    }
+    host-name leaf03.eve;
+    domain-name ross-lab.org;
+    syslog {
+        user * {
+            any emergency;
+        }
+        file messages {
+            any notice;
+            authorization info;
+        }
+        file interactive-commands {
+            interactive-commands any;
+        }
+    }
+}
+chassis {
+    network-services enhanced-ip;
+}
+interfaces {
+    ge-0/0/2 {
+        description leaf03-spine01;
+        unit 0 {
+            family inet {
+                address 10.1.0.5/31;
+            }
+            family iso;
+            family inet6;
+            family mpls;
+        }
+    }
+    ge-0/0/3 {
+        description leaf03-spine02;
+        unit 0 {
+            family inet {
+                address 10.1.0.11/31;
+            }
+            family iso;
+            family inet6;
+            family mpls;
+        }
+    }
+    lo0 {
+        unit 0 {
+            family inet {
+                address 1.2.1.3/32;
+            }
+            family iso {
+                address 49.0002.0001.0201.0003.00;
+            }
+            family inet6 {
+                address 2001::1:2:1:3/128;
+            }
+        }
+    }
+}
+routing-options {
+    autonomous-system 65001;
+}
+protocols {
+    bgp {
+        group iBGP {
+            type internal;
+            local-address 1.2.1.3;
+            family evpn {
+                signaling;
+            }
+            peer-as 65001;
+            neighbor 1.2.1.1 {
+                description leaf01;
+            }
+            neighbor 1.2.1.2 {
+                description leaf02;
+            }
+            neighbor 1.1.1.1 {
+                description cr01;
+            }
+            neighbor 1.1.1.2 {
+                description cr02;
+            }
+        }
+    }
+    isis {
+        backup-spf-options {
+            use-post-convergence-lfa;
+        }
+        source-packet-routing {
+            node-segment {
+                ipv4-index 3103;
+                ipv6-index 103;
+            }
+        }
+        level 1 disable;
+        level 2 wide-metrics-only;
+        interface ge-0/0/2.0 {
+            point-to-point;
+            level 2 {
+                metric 10;
+                post-convergence-lfa {
+                    node-protection;
+                }
+            }
+        }
+        interface ge-0/0/3.0 {
+            point-to-point;
+            level 2 {
+                metric 10;
+                post-convergence-lfa {
+                    node-protection;
+                }
+            }
+        }
+        interface lo0.0 {
+            passive;
+        }
+    }
+    mpls {
+        interface all;
+    }
+}

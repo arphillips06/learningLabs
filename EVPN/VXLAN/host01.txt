@@ -1,0 +1,79 @@
+root@host1> show configuration | no-more
+## Last commit: 2025-04-13 11:16:41 UTC by root
+version 14.1R1.10;
+system {
+    host-name host1;
+    root-authentication {
+        encrypted-password "$1$iiqdh9ru$CBQygri2MkpfgtgdGo8GO1"; ## SECRET-DATA
+    }
+    login {
+        user lab {
+            uid 2000;
+            class super-user;
+            authentication {
+                encrypted-password "$1$oW1NeMUu$N7IVMfy8GfJ02jzQzJ39h/"; ## SECRET-DATA
+            }
+        }
+    }
+    services {
+        telnet {
+            connection-limit 5;
+        }
+    }
+    syslog {
+        user * {
+            any emergency;
+        }
+        file messages {
+            any notice;
+            authorization info;
+        }
+        file interactive-commands {
+            interactive-commands any;
+        }
+    }
+}
+chassis {
+    aggregated-devices {
+        ethernet {
+            device-count 10;
+        }
+    }
+}
+interfaces {
+    ge-0/0/0 {
+        description host1->leaf01;
+        gigether-options {
+            802.3ad ae0;
+        }
+    }
+    ge-0/0/1 {
+        description host1->leaf02;
+        gigether-options {
+            802.3ad ae0;
+        }
+    }
+    ae0 {
+        flexible-vlan-tagging;
+        encapsulation flexible-ethernet-services;
+        aggregated-ether-options {
+            lacp {
+                active;
+                system-id 00:00:01:00:00:02;
+            }
+        }
+        unit 910 {
+            vlan-id 910;
+            family inet {
+                address 192.168.0.1/24;
+            }
+        }
+    }
+    em0 {
+        unit 0 {
+            family inet {
+                address 192.168.56.10/24;
+            }
+        }
+    }
+}

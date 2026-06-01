@@ -1,0 +1,182 @@
+
+root@spine02.eve> show configuration | no-more
+## Last commit: 2025-04-12 23:01:38 UTC by root
+version 20210930.105123_builder.r1214909;
+system {
+    root-authentication {
+        encrypted-password "$6$ACmUnK13$pN3iT3eNi1hUyv6TVd8w1GQE5V8UEy30IdcrQi3UVKfScAeeNnkv.ufuDV1dahCE4Q/O8nCgi9D30.fx.J/Vv."; ## SECRET-DATA
+    }
+    host-name spine02.eve;
+    domain-name ross-lab.org;
+    syslog {
+        user * {
+            any emergency;
+        }
+        file messages {
+            any notice;
+            authorization info;
+        }
+        file interactive-commands {
+            interactive-commands any;
+        }
+    }
+}
+chassis {
+    network-services enhanced-ip;
+}
+interfaces {
+    ge-0/0/0 {
+        description spine02->cr02.lab;
+        unit 0 {
+            family inet {
+                address 10.0.0.9/31;
+            }
+            family iso;
+            family inet6;
+            family mpls;
+        }
+    }
+    ge-0/0/1 {
+        description spine02->leaf01;
+        unit 0 {
+            family inet {
+                address 10.1.0.6/31;
+            }
+            family iso;
+            family inet6;
+            family mpls;
+        }
+    }
+    ge-0/0/2 {
+        description spine02->leaf02;
+        unit 0 {
+            family inet {
+                address 10.1.0.8/31;
+            }
+            family iso;
+            family inet6;
+            family mpls;
+        }
+    }
+    ge-0/0/3 {
+        description spine02->leaf03;
+        unit 0 {
+            family inet {
+                address 10.1.0.10/31;
+            }
+            family iso;
+            family inet6;
+            family mpls;
+        }
+    }
+    ge-0/0/4 {
+        description spine02->cr01;
+        unit 0 {
+            family inet {
+                address 10.0.0.3/31;
+            }
+            family iso;
+            family inet6;
+            family mpls;
+        }
+    }
+    ge-0/0/5 {
+        description spine02->spine01;
+        unit 0 {
+            family inet {
+                address 10.1.1.1/31;
+            }
+            family iso;
+            family inet6;
+            family mpls;
+        }
+    }
+    lo0 {
+        unit 0 {
+            family inet {
+                address 1.1.2.2/32;
+            }
+            family iso {
+                address 49.0002.0001.0102.0002.00;
+            }
+            family inet6 {
+                address 2001::1:1:2:2/128;
+            }
+        }
+    }
+}
+protocols {
+    isis {
+        backup-spf-options {
+            use-post-convergence-lfa;
+        }
+        source-packet-routing {
+            node-segment {
+                ipv4-index 3102;
+                ipv6-index 102;
+            }
+        }
+        level 1 disable;
+        level 2 wide-metrics-only;
+        interface ge-0/0/0.0 {
+            point-to-point;
+            level 2 {
+                metric 10;
+                post-convergence-lfa {
+                    node-protection;
+                }
+            }
+        }
+        interface ge-0/0/1.0 {
+            point-to-point;
+            level 2 {
+                metric 10;
+                post-convergence-lfa {
+                    node-protection;
+                }
+            }
+        }
+        interface ge-0/0/2.0 {
+            point-to-point;
+            level 2 {
+                metric 10;
+                post-convergence-lfa {
+                    node-protection;
+                }
+            }
+        }
+        interface ge-0/0/3.0 {
+            point-to-point;
+            level 2 {
+                metric 10;
+                post-convergence-lfa {
+                    node-protection;
+                }
+            }
+        }
+        interface ge-0/0/4.0 {
+            point-to-point;
+            level 2 {
+                metric 10;
+                post-convergence-lfa {
+                    node-protection;
+                }
+            }
+        }
+        interface ge-0/0/5.0 {
+            point-to-point;
+            level 2 {
+                metric 10;
+                post-convergence-lfa {
+                    node-protection;
+                }
+            }
+        }
+        interface lo0.0 {
+            passive;
+        }
+    }
+    mpls {
+        interface all;
+    }
+}
